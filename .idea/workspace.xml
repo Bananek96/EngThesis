@@ -5,33 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93f50c1d-d22c-45e7-9820-82de5229c46f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/index_pl.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/EngThesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/EngThesis.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/webResources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EngThesis/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EngThesis/asgi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EngThesis/settings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EngThesis/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/EngThesis/wsgi.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/apps.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/templates/home/index_en.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/templates/home/index_pl.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/urls.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/home/views.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/manage.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/template_en.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/template_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/template_pl.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blockchain.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,9 +17,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
         <option value="CSS File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -103,7 +79,7 @@
       <updated>1697012469327</updated>
       <workItem from="1697012470386" duration="661000" />
       <workItem from="1697013166802" duration="695000" />
-      <workItem from="1697013921089" duration="3432000" />
+      <workItem from="1697013921089" duration="5135000" />
     </task>
     <servers />
   </component>

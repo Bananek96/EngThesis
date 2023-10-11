@@ -7,20 +7,12 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        print(str(e))  # Log the exception
-        return "Internal Server Error", 500
+    return render_template('index.html')
 
 
 @app.route('/pl', methods=['GET'])
 def index_pl():
-    try:
-        return render_template('index_pl.html')
-    except Exception as e:
-        print(str(e))  # Log the exception
-        return "Internal Server Error", 500
+    return render_template('index_pl.html')
 
 
 if __name__ == '__main__':
