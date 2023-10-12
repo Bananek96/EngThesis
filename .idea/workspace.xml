@@ -5,9 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93f50c1d-d22c-45e7-9820-82de5229c46f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/blockchain.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/block.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utility/hash_util.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utility/printable.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utility/verification.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wallet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/EngThesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/EngThesis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,12 +67,13 @@
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "com.jetbrains.python.templateLanguages.PyTemplateLanguageModulesConfigurable",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\github\EngThesis\utility" />
       <recent name="D:\github\EngThesis\home" />
     </key>
   </component>
@@ -80,6 +88,7 @@
       <workItem from="1697012470386" duration="661000" />
       <workItem from="1697013166802" duration="695000" />
       <workItem from="1697013921089" duration="5135000" />
+      <workItem from="1697109458345" duration="6459000" />
     </task>
     <servers />
   </component>
