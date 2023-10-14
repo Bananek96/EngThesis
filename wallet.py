@@ -6,7 +6,7 @@ import binascii
 
 
 class Wallet:
-    """Creates, loads and holds private and public keys. Manages transaction
+    """Creates, loads and holds private and public keys. Manages transfer
     signing and verification."""
 
     def __init__(self, node_id):
@@ -61,12 +61,12 @@ class Wallet:
             .decode('ascii')
         )
 
-    def sign_transaction(self, sender, recipient, file):
-        """Sign a transaction and return the signature.
+    def sign_transfer(self, sender, recipient, file):
+        """Sign a transfer and return the signature.
 
         Arguments:
-            :sender: The sender of the transaction.
-            :recipient: The recipient of the transaction.
+            :sender: The sender of the transfer.
+            :recipient: The recipient of the transfer.
             :file: The file
         """
         signer = PKCS1_v1_5.new(RSA.importKey(
@@ -77,11 +77,11 @@ class Wallet:
         return binascii.hexlify(signature).decode('ascii')
 
     @staticmethod
-    def verify_transaction(transfer):
-        """Verify the signature of a transaction.
+    def verify_transfer(transfer):
+        """Verify the signature of a transfer.
 
         Arguments:
-            :transaction: The transaction that should be verified.
+            :transfer: The transfer that should be verified.
         """
         public_key = RSA.importKey(binascii.unhexlify(transfer.sender))
         verifier = PKCS1_v1_5.new(public_key)
