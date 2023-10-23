@@ -5,16 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93f50c1d-d22c-45e7-9820-82de5229c46f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/network.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/network_pl.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/transfer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/block.py" beforeDir="false" afterPath="$PROJECT_DIR$/block.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blockchain.py" beforeDir="false" afterPath="$PROJECT_DIR$/blockchain.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index_pl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/network.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/network.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/network_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/network_pl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/template_eng.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/template_pl.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utility/hash_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/utility/hash_util.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utility/verification.py" beforeDir="false" afterPath="$PROJECT_DIR$/utility/verification.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wallet.py" beforeDir="false" afterPath="$PROJECT_DIR$/wallet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wallet.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +29,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="CSS File" />
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -90,6 +94,14 @@
       <workItem from="1697013921089" duration="5135000" />
       <workItem from="1697109458345" duration="7108000" />
       <workItem from="1697300866575" duration="4937000" />
+      <workItem from="1697548736068" duration="1541000" />
+      <workItem from="1697721221766" duration="2424000" />
+      <workItem from="1697723708387" duration="2793000" />
+      <workItem from="1697979446021" duration="3855000" />
+      <workItem from="1698069517107" duration="2351000" />
+      <workItem from="1698073861272" duration="1638000" />
+      <workItem from="1698078256008" duration="4266000" />
+      <workItem from="1698084986265" duration="7968000" />
     </task>
     <servers />
   </component>

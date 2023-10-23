@@ -1,7 +1,394 @@
-{% extends 'template_eng.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Home{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Blockchain - Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
+    <style>
+        .lds-ring {
+            display: inline-block;
+            position: relative;
+            width: 64px;
+            height: 64px;
+        }
 
-{% block content %}
-    <h1>Hello world</h1>
-{% endblock %}
+        .lds-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 51px;
+            height: 51px;
+            margin: 6px;
+            border: 6px solid #fa923f;
+            border-radius: 50%;
+            animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: #fa923f transparent transparent transparent;
+        }
+
+        .lds-ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+
+        .lds-ring div:nth-child(2) {
+            animation-delay: -0.3s;
+        }
+
+        .lds-ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes lds-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm bg-dark">
+            <a class="navbar-brand text-white" href="/">Home Page</a>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="/network" class="nav-link text-white">Network</a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <a class="navbar-brand text-white" href="/pl">
+                    Polish
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="app">
+            <div class="container">
+                <hr>
+                <div v-if="error" class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                <div v-if="success" class="alert alert-success" role="alert">
+                    {{ success }}
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div v-if="!userLoading">
+                            <button class="btn btn-primary" @click="onCreateUser">
+                                Create new User
+                            </button>
+                            <button class="btn btn-primary" @click="onLoadUser">
+                                Load User
+                            </button>
+                        </div>
+
+                        <div v-if="userLoading" class="lds-ring">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                </div>
+                <hr>
+                <div v-if="!user" class="row">
+                    <div class="col">
+                        <div class="alert alert-warning">Create a User to start!</div>
+                    </div>
+                </div>
+                <div v-if="user" class="row">
+                    <div class="col">
+                        <form @submit.prevent="onSendTx">
+                            <div class="form-group">
+                                <label for="recipient">Recipient Key</label>
+                                <input v-model="outgoingTx.recipient" type="text" class="form-control" id="recipient" placeholder="Enter key">
+                            </div>
+                            <div class="form-group">
+                                <label for="file">FILE</label>
+                                <input v-model.number="outgoingTx.file" type="number" step="0.001" class="form-control" id="file">
+                            </div>
+                            <div v-if="txLoading" class="lds-ring">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                            <button :disabled="txLoading || outgoingTx.recipient.trim() === '' || outgoingTx.file != null" type="submit" class="btn btn-primary">Send</button>
+                        </form>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link" :class="{active: view === 'chain'}" href="#" @click="view = 'chain'">Blockchain</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" :class="{active: view === 'tx'}" href="#" @click="view = 'tx'">Open Transfers</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div v-if="dataLoading" class="lds-ring">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div v-if="!dataLoading" class="accordion">
+                            <div class="card" v-for="(data, index) in loadedData">
+                                <div v-if="view === 'chain'" class="card-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" @click="showElement === index ? showElement = null : showElement = index">
+                                            Block #{{ data.index }}
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div v-if="view === 'chain'" class="collapse" :class="{show: showElement === index}">
+                                    <div class="card-body">
+                                        <p>Previous Hash: {{ data.previous_hash }}</p>
+                                        <div class="list-group">
+                                            <div v-for="tx in data.transfers" class="list-group-item flex-column align-items-start">
+                                                <div>Sender: {{ tx.sender }}</div>
+                                                <div>Recipient: {{ tx.recipient }}</div>
+                                                <div>File: {{ tx.file }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div v-if="view === 'tx'" class="card-header">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" @click="showElement === index ? showElement = null : showElement = index">
+                                            Transfer #{{ index }}
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div v-if="view === 'tx'" class="collapse" :class="{show: showElement === index}">
+                                    <div class="card-body">
+                                        <div class="list-group">
+                                            <div class="list-group-item flex-column align-items-start">
+                                                <div>Sender: {{ data.sender }}</div>
+                                                <div>Recipient: {{ data.recipient }}</div>
+                                                <div>File: {{ data.file }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-center text-white bottom">
+        <section class="">
+            <div class="container text-center text-md-start mt-5">
+                <div class="row mt-4">
+                    <div class="col-md-2 col-lg-1 col-xl-1 mx-auto mb-2">
+                        <h6 class="text-uppercase fw-bold mb-4">Links</h6>
+                        <p><a href="#" class="text-reset">Linkedin</a></p>
+                    </div>
+                    <div class="col-md-2 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+                        <p><i class="fas fa-envelope me-3 text-secondary"></i>Email</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">© 2023 Copyright:</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                blockchain: [],
+                openTransfers: [],
+                user: null,
+                view: 'chain',
+                userLoading: false,
+                txLoading: false,
+                dataLoading: false,
+                showElement: null,
+                error: null,
+                success: null,
+                funds: 0,
+                outgoingTx: {
+                    recipient: '',
+                    amount: 0
+                }
+            },
+            computed: {
+                loadedData: function () {
+                    if (this.view === 'chain') {
+                        return this.blockchain;
+                    } else {
+                        return this.openTransfers;
+                    }
+                }
+            },
+            methods: {
+                onCreateWallet: function () {
+                    // Send Http request to create a new wallet (and return keys)
+                    var vm = this;
+                    this.userLoading = true
+                    axios.post('/user')
+                        .then(function (response) {
+                            vm.error = null;
+                            vm.success = 'Created User! Public Key: ' + response.data.public_key + ', Private Key: ' + response.data.private_key;
+                            vm.user = {
+                                public_key: response.data.public_key,
+                                private_key: response.data.private_key
+                            }
+                            vm.funds = response.data.funds;
+                            vm.userLoading = false
+                        })
+                        .catch(function (error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message
+                            vm.user = null
+                            vm.userLoading = false
+                        });
+                },
+                onLoadWallet: function () {
+                    var vm = this;
+                    this.userLoading = true
+                    axios.get('/user')
+                        .then(function (response) {
+                            vm.error = null;
+                            vm.success = 'Loaded User! Public Key: ' + response.data.public_key + ', Private Key: ' + response.data.private_key;
+                            vm.user = {
+                                public_key: response.data.public_key,
+                                private_key: response.data.private_key
+                            }
+                            vm.funds = response.data.funds;
+                            vm.userLoading = false;
+                        })
+                        .catch(function (error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                            vm.user = null;
+                            vm.userLoading = false;
+                        });
+                },
+                onSendTx: function () {
+                    this.txLoading = true;
+                    var vm = this;
+                    axios.post('/transfer', {
+                        recipient: this.outgoingTx.recipient,
+                        file: this.outgoingTx.file
+                    })
+                    .then(function(response) {
+                        vm.error = null;
+                        vm.success = response.data.message;
+                        console.log(response.data);
+                        vm.funds = response.data.funds;
+                        vm.txLoading = false;
+                    })
+                    .catch(function (error) {
+                        vm.success = null;
+                        vm.error = error.response.data.message;
+                        vm.txLoading = false;
+                    });
+                },
+                onMine: function () {
+                    var vm = this
+                    axios.post('/mine')
+                        .then(function(response) {
+                            vm.error = null;
+                            vm.success = response.data.message;
+                            console.log(response.data);
+                            vm.funds = response.data.funds;
+                        })
+                        .catch(function (error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                        });
+                },
+                onResolve: function() {
+                    var vm = this
+                    axios.post('/resolve-conflicts')
+                        .then(function(response) {
+                            vm.error = null;
+                            vm.success = response.data.message;
+                        })
+                        .catch(function (error) {
+                            vm.success = null;
+                            vm.error = error.response.data.message;
+                        });
+                },
+                onLoadData: function () {
+                    if (this.view === 'chain') {
+                        var vm = this
+                        this.dataLoading = true
+                        axios.get('/chain')
+                            .then(function (response) {
+                                vm.blockchain = response.data
+                                vm.dataLoading = false
+                            })
+                            .catch(function (error) {
+                                vm.dataLoading = false
+                                vm.error = 'Something went wrong.'
+                            });
+                    } else {
+                        var vm = this
+                        axios.get('/transfers')
+                            .then(function (response) {
+                                vm.openTransactions = response.data
+                                vm.dataLoading = false
+                            })
+                            .catch(function (error) {
+                                vm.dataLoading = false
+                                vm.error = 'Something went wrong.'
+                            });
+                    }
+                }
+            }
+        })
+    </script>
+    <script>
+        const footer = document.querySelector("footer");
+
+        function adjustFooterPosition() {
+            if (footerIsVisible()) {
+                footer.classList.add("fixed-bottom");
+            } else {
+                footer.classList.remove("fixed-bottom");
+            }
+        }
+
+        function footerIsVisible() {
+            const windowHeight = window.innerHeight;
+            const pageHeight = document.documentElement.scrollHeight;
+            return pageHeight <= windowHeight;
+        }
+
+        // Adjust the footer position when the window is resized or content is added dynamically.
+        window.addEventListener("resize", adjustFooterPosition);
+        window.addEventListener("scroll", adjustFooterPosition);
+
+        // Initial adjustment when the page loads
+        adjustFooterPosition();
+    </script>
+</body>
+</html>

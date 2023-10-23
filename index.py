@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_cors import CORS
 
-from wallet import Wallet
+from users import User
 from blockchain import Blockchain
 
 app = Flask(__name__)
@@ -10,12 +10,12 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    return send_from_directory('templates', 'index.html')
 
 
 @app.route('/pl', methods=['GET'])
 def index_pl():
-    return render_template('index_pl.html')
+    return send_from_directory('templates', 'index_pl.html')
 
 
 @app.route('/network', methods=['GET'])
@@ -28,15 +28,15 @@ def get_network_ui_pl():
     return render_template('network_pl.html')
 
 
-@app.route('/wallet', methods=['POST'])
+@app.route('/user', methods=['POST'])
 def create_keys():
-    wallet.create_keys()
-    if wallet.save_keys():
+    user.create_keys()
+    if user.save_keys_to_database():
         global blockchain
-        blockchain = Blockchain(wallet.public_key, port)
+        blockchain = Blockchain(user.public_key, port)
         response = {
-            'public_key': wallet.public_key,
-            'private_key': wallet.private_key,
+            'public_key': user.public_key,
+            'private_key': user.private_key,
             'funds': blockchain.get_balance()
         }
         return jsonify(response), 201
@@ -47,14 +47,14 @@ def create_keys():
         return jsonify(response), 500
 
 
-@app.route('/wallet', methods=['GET'])
+@app.route('/user', methods=['GET'])
 def load_keys():
-    if wallet.load_keys():
+    if user.load_keys_from_database():
         global blockchain
-        blockchain = Blockchain(wallet.public_key, port)
+        blockchain = Blockchain(user.public_key, port)
         response = {
-            'public_key': wallet.public_key,
-            'private_key': wallet.private_key,
+            'public_key': user.public_key,
+            'private_key': user.private_key,
             'funds': blockchain.get_balance()
         }
         return jsonify(response), 201
@@ -77,7 +77,7 @@ def get_balance():
     else:
         response = {
             'message': 'Loading balance failed.',
-            'wallet_set_up': wallet.public_key is not None
+            'user_set_up': user.public_key is not None
         }
         return jsonify(response), 500
 
@@ -146,9 +146,9 @@ def broadcast_block():
 
 @app.route('/transfer', methods=['POST'])
 def add_transfer():
-    if wallet.public_key is None:
+    if user.public_key is None:
         response = {
-            'message': 'No wallet set up.'
+            'message': 'No user set up.'
         }
         return jsonify(response), 400
     values = request.get_json()
@@ -165,14 +165,14 @@ def add_transfer():
         return jsonify(response), 400
     recipient = values['recipient']
     file = values['file']
-    signature = wallet.sign_transfer(wallet.public_key, recipient, file)
+    signature = user.sign_transfer(user.public_key, recipient, file)
     success = blockchain.add_transfer(
-        recipient, wallet.public_key, signature, file)
+        recipient, user.public_key, signature, file)
     if success:
         response = {
             'message': 'Successfully added transfer.',
             'transfer': {
-                'sender': wallet.public_key,
+                'sender': user.public_key,
                 'recipient': recipient,
                 'file': file,
                 'signature': signature
@@ -192,7 +192,13 @@ def mine():
     if blockchain.resolve_conflicts:
         response = {'message': 'Resolve conflicts first, block not added!'}
         return jsonify(response), 409
-    block = blockchain.mine_block()
+    file = request.files['file']
+
+    if file is None:
+        response = {'message': 'No file uploaded.'}
+        return jsonify(response), 400
+
+    block = blockchain.mine_block(file)
     if block is not None:
         dict_block = block.__dict__.copy()
         dict_block['transfers'] = [
@@ -206,7 +212,7 @@ def mine():
     else:
         response = {
             'message': 'Adding a block failed.',
-            'wallet_set_up': wallet.public_key is not None
+            'user_set_up': user.public_key is not None
         }
         return jsonify(response), 500
 
@@ -290,6 +296,6 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', type=int, default=5000)
     args = parser.parse_args()
     port = args.port
-    wallet = Wallet(port)
-    blockchain = Blockchain(wallet.public_key, port)
+    user = User(port)
+    blockchain = Blockchain(user.public_key, port)
     app.run(host='0.0.0.0', port=port)
