@@ -30,14 +30,12 @@ def get_network_ui_pl():
 
 @app.route('/user', methods=['POST'])
 def create_keys():
-    user.create_keys()
-    if user.save_keys_to_database():
+    if user.create_keys():
         global blockchain
         blockchain = Blockchain(user.public_key, port)
         response = {
             'public_key': user.public_key,
             'private_key': user.private_key,
-            'funds': blockchain.get_balance()
         }
         return jsonify(response), 201
     else:
@@ -55,7 +53,6 @@ def load_keys():
         response = {
             'public_key': user.public_key,
             'private_key': user.private_key,
-            'funds': blockchain.get_balance()
         }
         return jsonify(response), 201
     else:

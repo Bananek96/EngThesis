@@ -219,36 +219,35 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
-        new Vue({
-            el: '#app',
-            data: {
-                blockchain: [],
-                openTransfers: [],
-                user: null,
-                view: 'chain',
-                userLoading: false,
-                txLoading: false,
-                dataLoading: false,
-                showElement: null,
-                error: null,
-                success: null,
-                funds: 0,
-                outgoingTx: {
-                    recipient: '',
-                    amount: 0
+    new Vue({
+        el: '#app',
+        data: {
+            blockchain: [],
+            user: null,
+            view: 'chain',
+            userLoading: false,
+            txLoading: false,
+            dataLoading: false,
+            showElement: null,
+            error: null,
+            success: null,
+            funds: 0,
+            outgoingTx: {
+                recipient: '',
+                file: 0 // Use 'file' as a number field
+            }
+        },
+        computed: {
+            loadedData: function () {
+                if (this.view === 'chain') {
+                    return this.blockchain;
+                } else {
+                    return this.openTransfers; // Change to the correct variable name
                 }
-            },
-            computed: {
-                loadedData: function () {
-                    if (this.view === 'chain') {
-                        return this.blockchain;
-                    } else {
-                        return this.openTransfers;
-                    }
-                }
-            },
-            methods: {
-                onCreateWallet: function () {
+            }
+        },
+        methods: {
+            onCreateUser: function () {
                     // Send Http request to create a new wallet (and return keys)
                     var vm = this;
                     this.userLoading = true
@@ -270,7 +269,7 @@
                             vm.userLoading = false
                         });
                 },
-                onLoadWallet: function () {
+                onLoadUser: function () {
                     var vm = this;
                     this.userLoading = true
                     axios.get('/user')

@@ -17,7 +17,9 @@ class User:
         self.private_key = private_key
         self.public_key = public_key
 
-        self.save_keys_to_database()
+        if self.save_keys_to_database():
+            return False
+        return True
 
     def save_keys_to_database(self):
         conn = sqlite3.connect('users.db')
@@ -29,12 +31,17 @@ class User:
                 public_key TEXT,
                 private_key TEXT
             )
-            ''')
+        ''')
 
-        cursor.execute('''
-            INSERT OR REPLACE INTO users (node_id, public_key, private_key)
-            VALUES (?, ?, ?)
-        ''', (self.node_id, self.public_key, self.private_key))
+        # Check if the node_id already exists in the database
+        res = cursor.execute('SELECT node_id FROM users WHERE node_id = ?', (self.node_id,))
+        row = res.fetchone()
+
+        if row is None:
+            cursor.execute('''
+                INSERT INTO users (node_id, public_key, private_key)
+                VALUES (?, ?, ?)
+            ''', (self.node_id, self.public_key, self.private_key))
 
         conn.commit()
         conn.close()
@@ -46,12 +53,14 @@ class User:
         cursor.execute('SELECT public_key, private_key FROM users WHERE node_id = ?', (self.node_id,))
         row = cursor.fetchone()
 
+        conditional = False
         if row:
             self.public_key = row[0]
             self.private_key = row[1]
+            conditional = True
 
-        # Close the connection
         conn.close()
+        return conditional
 
     @staticmethod
     def generate_keys():
@@ -67,11 +76,10 @@ class User:
         )
 
     def sign_transfer(self, sender, recipient, file):
-        signer = PKCS1_v1_5.new(RSA.importKey(
-            binascii.unhexlify(self.private_key)))
+        private_key = RSA.importKey(binascii.unhexlify(self.private_key))
         h = SHA256.new((str(sender) + str(recipient) +
                         str(file)).encode('utf8'))
-        signature = signer.sign(h)
+        signature = PKCS1_v1_5.new(private_key).sign(h)
         return binascii.hexlify(signature).decode('ascii')
 
     @staticmethod

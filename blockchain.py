@@ -1,5 +1,3 @@
-from functools import reduce
-
 import json
 import requests
 import sqlite3
@@ -60,6 +58,33 @@ class Blockchain:
         if len(self.__chain) < 1:
             return None
         return self.__chain[-1]
+
+    def save_data(self):
+        saveable_chain = json.dumps([block.__dict__ for block in self.__chain])
+        saveable_open_transfers = json.dumps([tx.__dict__ for tx in self.__open_transfers])
+
+        self.cursor.execute('DELETE FROM blockchain')
+        self.cursor.execute('DELETE FROM open_transfers')
+        self.cursor.execute('INSERT INTO blockchain (block_data) VALUES (?)', (saveable_chain,))
+        for tx in self.__open_transfers:
+            self.cursor.execute('INSERT INTO open_transfers (sender, recipient, file, signature) VALUES (?, ?, ?, ?)',
+                                (tx.sender, tx.recipient, tx.file, tx.signature))
+        self.conn.commit()
+
+    def load_data(self):
+        self.__chain = []
+        self.__open_transfers = []
+
+        self.cursor.execute('SELECT block_data FROM blockchain')
+        data = self.cursor.fetchone()
+        if data:
+            blockchain_data = json.loads(data[0])
+            self.__chain = [Block(**block) for block in blockchain_data]
+
+        self.cursor.execute('SELECT * FROM open_transfers')
+        data = self.cursor.fetchall()
+        if data:
+            self.__open_transfers = [Transfer(sender=row[1], recipient=row[2], file=row[3], signature=row[4]) for row in data]
 
     def get_balance(self, sender=None):
         if sender is None:
@@ -124,23 +149,21 @@ class Blockchain:
 
     def add_transfer(self, recipient, sender, file, signature, is_receiving=False):
         transfer = Transfer(sender, recipient, signature, file)
-        if Verification.verify_transfer(transfer, self.get_balance):
+        if User.verify_transfer(transfer, self.get_balance):
             self.__open_transfers.append(transfer)
             self.save_data()
             if not is_receiving:
                 for node in self.__peer_nodes:
-                    url = 'http://{}/broadcast-transfer'.format(node)
+                    url = f'http://{node}/broadcast-transfer'
                     try:
-                        response = requests.post(url,
-                                                 json={
-                                                     'sender': sender,
-                                                     'recipient': recipient,
-                                                     'file': file,
-                                                     'signature': signature
-                                                 })
-                        if (response.status_code == 400 or
-                                response.status_code == 500):
-                            print('transfer declined, needs resolving')
+                        response = requests.post(url, json={
+                            'sender': sender,
+                            'recipient': recipient,
+                            'file': file,
+                            'signature': signature
+                        })
+                        if response.status_code == 400 or response.status_code == 500:
+                            print('Transfer declined, needs resolving')
                             return False
                     except requests.exceptions.ConnectionError:
                         continue
@@ -158,29 +181,29 @@ class Blockchain:
             transfers[:-1], block['previous_hash'], block['proof'])
 
         hashes_match = hash_block(self.chain[-1]) == block['previous_hash']
-        if not proof_is_valid or not hashes_match:
-            return False
-        converted_block = Block(
-            block['index'],
-            block['previous_hash'],
-            transfers,
-            block['proof'],
-            block['timestamp'])
-        self.__chain.append(converted_block)
-        stored_transfers = self.__open_transfers[:]
+        if proof_is_valid and hashes_match:
+            converted_block = Block(
+                block['index'],
+                block['previous_hash'],
+                transfers,
+                block['proof'],
+                block['timestamp'])
+            self.__chain.append(converted_block)
+            stored_transfers = self.__open_transfers[:]
 
-        for itx in block['transfers']:
-            for opentx in stored_transfers:
-                if (opentx.sender == itx['sender'] and
-                        opentx.recipient == itx['recipient'] and
-                        opentx.file == itx['file'] and
-                        opentx.signature == itx['signature']):
-                    try:
-                        self.__open_transfers.remove(opentx)
-                    except ValueError:
-                        print('Item was already removed')
-        self.save_data()
-        return True
+            for itx in block['transfers']:
+                for opentx in stored_transfers:
+                    if (opentx.sender == itx['sender'] and
+                            opentx.recipient == itx['recipient'] and
+                            opentx.file == itx['file'] and
+                            opentx.signature == itx['signature']):
+                        try:
+                            self.__open_transfers.remove(opentx)
+                        except ValueError:
+                            print('Item was already removed')
+            self.save_data()
+            return True
+        return False
 
     def proof_of_work(self):
         last_block = self.__chain[-1]
@@ -193,33 +216,6 @@ class Blockchain:
         ):
             proof += 1
         return proof
-
-    def save_data(self):
-        saveable_chain = json.dumps([block.__dict__ for block in self.__chain])
-        saveable_open_transfers = json.dumps(
-            [tx.__dict__ for tx in self.__open_transfers])
-
-        self.cursor.execute('DELETE FROM blockchain')
-        self.cursor.execute('DELETE FROM open_transfers')
-        self.cursor.execute('INSERT INTO blockchain (block_data) VALUES (?)', (saveable_chain,))
-        self.cursor.execute('INSERT INTO open_transactions (sender, recipient, file, signature) VALUES (?, ?, ?, ?)', (sender, recipient, file, signature))
-
-        self.conn.commit()
-
-    def load_data(self):
-        self.chain = []
-        self.__open_transfers = []
-
-        self.cursor.execute('SELECT block_data FROM blockchain')
-        data = self.cursor.fetchone()
-        if data:
-            blockchain_data = json.loads(data[0])
-            self.chain = [Block(**block) for block in blockchain_data]
-
-        self.cursor.execute('SELECT * FROM open_transfers')
-        data = self.cursor.fetchall()
-        if data:
-            self.__open_transfers = [Transfer(sender=row[1], recipient=row[2], file=row[3], signature=row[4]) for row in data]
 
     def resolve(self):
         winner_chain = self.chain
