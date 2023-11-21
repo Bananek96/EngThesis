@@ -4,6 +4,8 @@ from flask_cors import CORS
 from users import User
 from blockchain import Blockchain
 
+import base64
+
 app = Flask(__name__)
 CORS(app)
 
@@ -62,23 +64,6 @@ def load_keys():
         return jsonify(response), 500
 
 
-@app.route('/balance', methods=['GET'])
-def get_balance():
-    balance = blockchain.get_balance()
-    if balance is not None:
-        response = {
-            'message': 'Fetched balance successfully.',
-            'funds': balance
-        }
-        return jsonify(response), 200
-    else:
-        response = {
-            'message': 'Loading balance failed.',
-            'user_set_up': user.public_key is not None
-        }
-        return jsonify(response), 500
-
-
 @app.route('/broadcast-transfer', methods=['POST'])
 def broadcast_transfer():
     values = request.get_json()
@@ -92,8 +77,9 @@ def broadcast_transfer():
     success = blockchain.add_transfer(
         values['recipient'],
         values['sender'],
-        values['signature'],
+        values['file_name'],
         values['file'],
+        values['signature'],
         is_receiving=True)
     if success:
         response = {
@@ -148,70 +134,70 @@ def add_transfer():
             'message': 'No user set up.'
         }
         return jsonify(response), 400
-    values = request.get_json()
-    if not values:
-        response = {
-            'message': 'No data found.'
-        }
-        return jsonify(response), 400
-    required_fields = ['recipient', 'file']
-    if not all(field in values for field in required_fields):
-        response = {
-            'message': 'Required data is missing.'
-        }
-        return jsonify(response), 400
-    recipient = values['recipient']
-    file = values['file']
-    signature = user.sign_transfer(user.public_key, recipient, file)
-    success = blockchain.add_transfer(
-        recipient, user.public_key, signature, file)
-    if success:
-        response = {
-            'message': 'Successfully added transfer.',
-            'transfer': {
-                'sender': user.public_key,
-                'recipient': recipient,
-                'file': file,
-                'signature': signature
-            },
-            'funds': blockchain.get_balance()
-        }
-        return jsonify(response), 201
-    else:
-        response = {
-            'message': 'Creating a transfer failed.'
-        }
-        return jsonify(response), 500
+    recipient = request.form.get("recipient")
+    uploaded_file = request.files["file"]
+
+    if recipient and uploaded_file:
+        file_name = uploaded_file.filename
+        binary_data = uploaded_file.read()
+        base64_data = base64.b64encode(binary_data).decode('utf-8')
+        signature = user.sign_transfer(user.public_key, recipient, base64_data)
+
+        success = blockchain.add_transfer(
+            recipient, user.public_key, file_name, base64_data, signature)
+        if success:
+            response = {
+                'message': 'Successfully added transfer.',
+                'transfer': {
+                    'sender': user.public_key,
+                    'recipient': recipient,
+                    'file_name': file_name,
+                    'file': base64_data,
+                    'signature': signature
+                },
+            }
+            return jsonify(response), 201
+        else:
+            response = {
+                'message': 'Creating a transfer failed.'
+            }
+            return jsonify(response), 500
 
 
 @app.route('/mine', methods=['POST'])
 def mine():
-    if blockchain.resolve_conflicts:
-        response = {'message': 'Resolve conflicts first, block not added!'}
-        return jsonify(response), 409
     file = request.files['file']
 
-    if file is None:
+    if file:
+        binary_data = file.read()
+        base64_data = base64.b64encode(binary_data).decode('utf-8')
+        block = blockchain.mine_block(base64_data)
+        if block is not None:
+            dict_block = block.__dict__.copy()
+            dict_block['transfers'] = [
+                tx.__dict__ for tx in dict_block['transfers']]
+            for tx in dict_block['transfers']:
+                tx['file_name'] = file.filename
+            response = {
+                'message': 'Block added successfully.',
+                'block': {
+                    'index': dict_block['index'],
+                    'previous_hash': dict_block['previous_hash'],
+                    'transfers': dict_block['transfers'],
+                    'proof': dict_block['proof'],
+                    'timestamp': dict_block['timestamp'],
+                },
+            }
+            return jsonify(response), 201
+        else:
+            response = {
+                'message': 'Adding a block failed.',
+                'user_set_up': user.public_key is not None
+            }
+            return jsonify(response), 500
+    else:
         response = {'message': 'No file uploaded.'}
         return jsonify(response), 400
-
-    block = blockchain.mine_block(file)
-    if block is not None:
-        dict_block = block.__dict__.copy()
-        dict_block['transfers'] = [
-            tx.__dict__ for tx in dict_block['transfers']]
-        response = {
-            'message': 'Block added successfully.',
-            'block': dict_block,
-            'funds': blockchain.get_balance()
-        }
-        return jsonify(response), 201
-    else:
-        response = {
-            'message': 'Adding a block failed.',
-            'user_set_up': user.public_key is not None
-        }
-        return jsonify(response), 500
 
 
 @app.route('/resolve-conflicts', methods=['POST'])

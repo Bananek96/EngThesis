@@ -19,28 +19,6 @@ class Blockchain:
         self.node_id = node_id
         self.resolve_conflicts = False
 
-        self.conn = sqlite3.connect('blockchain-{}.db'.format(self.node_id))
-        self.cursor = self.conn.cursor()
-
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS blockchain (
-                block_id INTEGER PRIMARY KEY,
-                block_data TEXT
-            )
-        ''')
-
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS open_transfers (
-                transfer_id INTEGER PRIMARY KEY,
-                sender TEXT,
-                recipient TEXT,
-                filename TEXT,
-                file BLOB,
-                signature TEXT
-            )
-        ''')
-
-        self.conn.commit()
         self.load_data()
 
     @property
@@ -60,31 +38,83 @@ class Blockchain:
         return self.__chain[-1]
 
     def save_data(self):
-        saveable_chain = json.dumps([block.__dict__ for block in self.__chain])
-        saveable_open_transfers = json.dumps([tx.__dict__ for tx in self.__open_transfers])
+        saveable_chain = [
+            block.__dict__ for block in
+            [
+                Block(block_el.index,
+                      block_el.previous_hash,
+                      [tx.__dict__ for tx in block_el.transfers],
+                      block_el.proof,
+                      block_el.timestamp) for block_el in self.__chain
+            ]
+        ]
 
-        self.cursor.execute('DELETE FROM blockchain')
-        self.cursor.execute('DELETE FROM open_transfers')
-        self.cursor.execute('INSERT INTO blockchain (block_data) VALUES (?)', (saveable_chain,))
+        conn = sqlite3.connect('blockchain-{}.db'.format(self.node_id))
+        cursor = conn.cursor()
+
+        for block_data in saveable_chain:
+            cursor.execute('''
+                INSERT INTO blockchain (block_data) 
+                VALUES (?)
+            ''', (json.dumps(block_data),))
+
         for tx in self.__open_transfers:
-            self.cursor.execute('INSERT INTO open_transfers (sender, recipient, file, signature) VALUES (?, ?, ?, ?)',
-                                (tx.sender, tx.recipient, tx.file, tx.signature))
-        self.conn.commit()
+            cursor.execute('''
+                INSERT INTO open_transfers (sender, recipient, file_name, file, signature) 
+                VALUES (?, ?, ?, ?, ?)
+            ''', (tx.sender, tx.recipient, tx.file_name, tx.file, tx.signature))
+        conn.commit()
 
     def load_data(self):
-        self.__chain = []
+        self.chain = []
         self.__open_transfers = []
 
-        self.cursor.execute('SELECT block_data FROM blockchain')
-        data = self.cursor.fetchone()
-        if data:
-            blockchain_data = json.loads(data[0])
-            self.__chain = [Block(**block) for block in blockchain_data]
+        conn = sqlite3.connect('blockchain-{}.db'.format(self.node_id))
+        cursor = conn.cursor()
 
-        self.cursor.execute('SELECT * FROM open_transfers')
-        data = self.cursor.fetchall()
-        if data:
-            self.__open_transfers = [Transfer(sender=row[1], recipient=row[2], file=row[3], signature=row[4]) for row in data]
+        cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS blockchain (
+                        block_id INTEGER PRIMARY KEY,
+                        block_data TEXT
+                    )
+                ''')
+
+        cursor.execute('''
+                    CREATE TABLE IF NOT EXISTS open_transfers (
+                        transfer_id INTEGER PRIMARY KEY,
+                        sender TEXT,
+                        recipient TEXT,
+                        file_name TEXT,
+                        file BLOB,
+                        signature TEXT
+                    )
+                ''')
+
+        conn.commit()
+
+        data = cursor.execute('SELECT block_data FROM blockchain')
+        block_data = data.fetchall()
+        if block_data:
+            for row in block_data:
+                block = json.loads(row[0])
+                block_instance = Block(
+                    index=block['index'],
+                    previous_hash=block['previous_hash'],
+                    transfers=[Transfer(**tx) for tx in block['transfers']],
+                    proof=block['proof']
+                )
+                self.__chain.append(block_instance)
+        else:
+            # If no blocks are found, create a genesis block
+            self.__chain = [Block(0, 'genesis_previous_hash', [], 0, 0)]
+
+        data = cursor.execute('SELECT * FROM open_transfers')
+        rows = data.fetchall()
+        if rows:
+            for row in rows:
+                self.__open_transfers.append(Transfer(sender=row[1], recipient=row[2], file_name=row[3], file=row[4], signature=row[5]))
+
+        conn.close()
 
     def get_balance(self, sender=None):
         if sender is None:
@@ -114,7 +144,7 @@ class Blockchain:
 
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
-        reward_transfer = Transfer('SYSTEM', self.public_key, '', file)
+        reward_transfer = Transfer('SYSTEM', self.public_key, '', file, '')
 
         copied_transfers = self.__open_transfers[:]
         for tx in copied_transfers:
@@ -147,9 +177,9 @@ class Blockchain:
                 continue
         return block
 
-    def add_transfer(self, recipient, sender, file, signature, is_receiving=False):
-        transfer = Transfer(sender, recipient, signature, file)
-        if User.verify_transfer(transfer, self.get_balance):
+    def add_transfer(self, recipient, sender, file_name, file, signature, is_receiving=False):
+        transfer = Transfer(sender, recipient, signature, file, file_name)
+        if User.verify_transfer(transfer):
             self.__open_transfers.append(transfer)
             self.save_data()
             if not is_receiving:
@@ -175,6 +205,7 @@ class Blockchain:
             tx['sender'],
             tx['recipient'],
             tx['signature'],
+            tx['file_name'],
             tx['file']) for tx in block['transfers']]
 
         proof_is_valid = Verification.valid_proof(
@@ -233,6 +264,7 @@ class Blockchain:
                                   tx['sender'],
                                   tx['recipient'],
                                   tx['signature'],
+                                  tx['file_name'],
                                   tx['file']) for tx in block['transfers']
                           ],
                           block['proof'],

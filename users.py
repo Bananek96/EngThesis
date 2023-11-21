@@ -33,7 +33,6 @@ class User:
             )
         ''')
 
-        # Check if the node_id already exists in the database
         res = cursor.execute('SELECT node_id FROM users WHERE node_id = ?', (self.node_id,))
         row = res.fetchone()
 
@@ -77,8 +76,8 @@ class User:
 
     def sign_transfer(self, sender, recipient, file):
         private_key = RSA.importKey(binascii.unhexlify(self.private_key))
-        h = SHA256.new((str(sender) + str(recipient) +
-                        str(file)).encode('utf8'))
+        h = SHA256.new((str(sender) + str(recipient)).encode('utf8'))
+        h.update(file.encode('utf-8'))
         signature = PKCS1_v1_5.new(private_key).sign(h)
         return binascii.hexlify(signature).decode('ascii')
 
@@ -86,6 +85,10 @@ class User:
     def verify_transfer(transfer):
         public_key = RSA.importKey(binascii.unhexlify(transfer.sender))
         verifier = PKCS1_v1_5.new(public_key)
-        h = SHA256.new((str(transfer.sender) + str(transfer.recipient) +
-                        str(transfer.file)).encode('utf8'))
-        return verifier.verify(h, binascii.unhexlify(transfer.signature))
+        h = SHA256.new((str(transfer.sender) + str(transfer.recipient)).encode('utf8'))
+        file = transfer.file
+        h.update(file.encode('utf-8'))
+        if verifier.verify(h, transfer.signature) == 0:
+            return True
+        else:
+            return False

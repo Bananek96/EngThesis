@@ -13,9 +13,10 @@ class Transfer(Printable):
         :file: The transfer file.
     """
 
-    def __init__(self, sender, recipient, signature, file):
+    def __init__(self, sender, recipient, signature, file, file_name):
         self.sender = sender
         self.recipient = recipient
+        self.file_name = file_name
         self.file = file
         self.signature = signature
 
@@ -23,4 +24,5 @@ class Transfer(Printable):
         """Converts this transfer into a (hashable) OrderedDict."""
         return OrderedDict([('sender', self.sender),
                             ('recipient', self.recipient),
+                            ('file_name', self.file_name),
                             ('file', self.file)])
