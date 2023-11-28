@@ -13,7 +13,19 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="blockchain-5000" uuid="f7776f59-a1d6-432d-b182-d3648f4917a5">
+    <data-source name="blockchain-5000" uuid="25570108-efd6-4dd5-ba21-386d3addbfbe">
+      <database-info product="SQLite" version="3.43.0" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.43.0.0" dbms="SQLITE" exact-version="3.43.0" exact-driver-version="3.43">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <auth-provider>no-auth</auth-provider>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="schema" qname="@" />
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
+    <data-source name="blockchain-5001" uuid="1e7bbdab-4068-4dcd-bc86-e1be9f41ecc2">
       <database-info product="SQLite" version="3.43.0" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.43.0.0" dbms="SQLITE" exact-version="3.43.0" exact-driver-version="3.43">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>

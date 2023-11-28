@@ -11,13 +11,13 @@
 </head>
 
 <body>
-    <section>
+    <header>
         <nav class="navbar navbar-expand-sm bg-dark">
             <a class="navbar-brand text-white" href="/pl">Strona Główna</a>
             <div class="collapse navbar-collapse" id="collapsibleNavbar">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a href="/network-pl" class="nav-link text-white"">Network</a>
+                        <a href="/network-pl" class="nav-link text-white">Network</a>
                     </li>
                 </ul>
             </div>
@@ -27,70 +27,49 @@
                 </a>
             </div>
         </nav>
-    </section>
+    </header>
 
-    <div id="app">
-        <div class="container">
-            <div class="row mb-3">
-                <div class="col">
-                    <h1>Zarządzaj swoim Blockchainem</h1>
+    <main>
+        <div id="app">
+            <div class="container">
+                <hr>
+                <div v-if="error" class="alert alert-danger" role="alert">
+                    {{ error }}
                 </div>
-            </div>
-            <div v-if="error" class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-            <div v-if="success" class="alert alert-success" role="alert">
-                {{ success }}
-            </div>
+                <div v-if="success" class="alert alert-success" role="alert">
+                    {{ success }}
+                </div>
 
-            <hr>
-            <div class="row">
-                <div class="col">
-                    <form @submit.prevent="onAddNode">
-                        <div class="form-group">
-                            <label for="node-url">Node URL</label>
-                            <input v-model="newNodeUrl" type="text" class="form-control" id="node-url" placeholder="localhost:5001">
-                        </div>
-                        <button :disabled="newNodeUrl.trim() === ''" type="submit" class="btn btn-primary">Dodaj</button>
-                    </form>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <form @submit.prevent="onAddNode">
+                            <div class="form-group">
+                                <label for="node-url">Node URL</label>
+                                <input v-model="newNodeUrl" type="text" class="form-control" id="node-url" placeholder="localhost:5001">
+                            </div>
+                            <button :disabled="newNodeUrl.trim() === ''" type="submit" class="btn btn-primary">Dodaj</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <hr>
-            <div class="row my-3">
-                <div class="col">
-                    <button class="btn btn-primary" @click="onLoadNodes">Załaduj Peer Nodes</button>
+                <hr>
+                <div class="row my-3">
+                    <div class="col">
+                        <button class="btn btn-primary" @click="onLoadNodes">Załaduj Peer Nodes</button>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <ul class="list-group">
-                        <button v-for="node in nodes" style="cursor: pointer;" class="list-group-item list-group-item-action" @click="onRemoveNode(node)">
-                            {{ node }} (kliknij, aby usunąć)
-                        </button>
-                    </ul>
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group">
+                            <button v-for="node in nodes" style="cursor: pointer;" class="list-group-item list-group-item-action" @click="onRemoveNode(node)">
+                                {{ node }} (kliknij, aby usunąć)
+                            </button>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-
-    <footer class="bg-dark text-center text-white fixed-bottom">
-        <section class="">
-            <div class="container text-center text-md-start mt-5">
-                <div class="row mt-4">
-                    <div class="col-md-2 col-lg-1 col-xl-1 mx-auto mb-2">
-                        <h6 class="text-uppercase fw-bold mb-4">Linki</h6>
-                        <p><a href="#" class="text-reset">Linkedin</a></p>
-                    </div>
-                    <div class="col-md-2 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-                        <h6 class="text-uppercase fw-bold mb-4">Kontakt</h6>
-                        <p><i class="fas fa-envelope me-3 text-secondary"></i>Email</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">© 2023 Copyright:</div>
-    </footer>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

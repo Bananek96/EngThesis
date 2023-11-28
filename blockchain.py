@@ -52,6 +52,11 @@ class Blockchain:
         conn = sqlite3.connect('blockchain-{}.db'.format(self.node_id))
         cursor = conn.cursor()
 
+        cursor.execute('''
+            INSERT INTO peer_nodes (node_url) 
+            VALUES (?)
+        ''', (json.dumps(list(self.__peer_nodes)),))
+
         for block_data in saveable_chain:
             cursor.execute('''
                 INSERT INTO blockchain (block_data) 
@@ -73,6 +78,13 @@ class Blockchain:
         cursor = conn.cursor()
 
         cursor.execute('''
+            CREATE TABLE IF NOT EXISTS peer_nodes (
+                node_id INTEGER PRIMARY KEY,
+                node_url TEXT
+            )
+        ''')
+
+        cursor.execute('''
                     CREATE TABLE IF NOT EXISTS blockchain (
                         block_id INTEGER PRIMARY KEY,
                         block_data TEXT
@@ -92,20 +104,26 @@ class Blockchain:
 
         conn.commit()
 
+        data = cursor.execute('SELECT node_url FROM peer_nodes')
+        peer_nodes_data = data.fetchone()
+        if peer_nodes_data:
+            peer_nodes = json.loads(peer_nodes_data[0])
+            self.__peer_nodes = set(peer_nodes)
+
         data = cursor.execute('SELECT block_data FROM blockchain')
         block_data = data.fetchall()
         if block_data:
             for row in block_data:
                 block = json.loads(row[0])
-                block_instance = Block(
-                    index=block['index'],
-                    previous_hash=block['previous_hash'],
-                    transfers=[Transfer(**tx) for tx in block['transfers']],
-                    proof=block['proof']
-                )
-                self.__chain.append(block_instance)
+                if not any(b.index == block['index'] for b in self.__chain):
+                    block_instance = Block(
+                        index=block['index'],
+                        previous_hash=block['previous_hash'],
+                        transfers=[Transfer(**tx) for tx in block['transfers']],
+                        proof=block['proof']
+                    )
+                    self.__chain.append(block_instance)
         else:
-            # If no blocks are found, create a genesis block
             self.__chain = [Block(0, 'genesis_previous_hash', [], 0, 0)]
 
         data = cursor.execute('SELECT * FROM open_transfers')
@@ -137,14 +155,14 @@ class Blockchain:
 
         return count_files_received + count_files_sent
 
-    def mine_block(self, file):
+    def mine_block(self, file, file_name):
         if self.public_key is None:
             return None
         last_block = self.__chain[-1]
 
         hashed_block = hash_block(last_block)
         proof = self.proof_of_work()
-        reward_transfer = Transfer('SYSTEM', self.public_key, '', file, '')
+        reward_transfer = Transfer('SYSTEM', self.public_key, '', file, file_name)
 
         copied_transfers = self.__open_transfers[:]
         for tx in copied_transfers:
@@ -159,6 +177,15 @@ class Blockchain:
             proof
         )
 
+        conn = sqlite3.connect('blockchain-{}.db'.format(self.node_id))
+        cursor = conn.cursor()
+        for tx in copied_transfers:
+            cursor.execute('''
+                DELETE FROM open_transfers
+                WHERE sender = ? AND recipient = ? AND file_name = ? AND file = ? AND signature = ?
+            ''', (tx.sender, tx.recipient, tx.file_name, tx.file, tx.signature))
+        conn.commit()
+        conn.close()
         self.__chain.append(block)
         self.__open_transfers = []
         self.save_data()
@@ -189,6 +216,7 @@ class Blockchain:
                         response = requests.post(url, json={
                             'sender': sender,
                             'recipient': recipient,
+                            'file_name': file_name,
                             'file': file,
                             'signature': signature
                         })
@@ -226,6 +254,7 @@ class Blockchain:
                 for opentx in stored_transfers:
                     if (opentx.sender == itx['sender'] and
                             opentx.recipient == itx['recipient'] and
+                            opentx.file_name == itx['file_name'] and
                             opentx.file == itx['file'] and
                             opentx.signature == itx['signature']):
                         try:
@@ -295,4 +324,5 @@ class Blockchain:
         self.save_data()
 
     def get_peer_nodes(self):
-        return list(self.__peer_nodes)
+        peer_nodes_list = list(self.__peer_nodes)
+        return peer_nodes_list

@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, request, render_template, send_from_directory
+import base64
+import json
+import sqlite3
+
+from flask import Flask, jsonify, request, render_template, send_from_directory, make_response
 from flask_cors import CORS
 
-from users import User
 from blockchain import Blockchain
-
-import base64
+from users import User
 
 app = Flask(__name__)
 CORS(app)
@@ -70,7 +72,7 @@ def broadcast_transfer():
     if not values:
         response = {'message': 'No data found.'}
         return jsonify(response), 400
-    required = ['sender', 'recipient', 'file', 'signature']
+    required = ['sender', 'recipient', 'file_name', 'file', 'signature']
     if not all(key in values for key in required):
         response = {'message': 'Some data is missing.'}
         return jsonify(response), 400
@@ -87,6 +89,7 @@ def broadcast_transfer():
             'transfer': {
                 'sender': values['sender'],
                 'recipient': values['recipient'],
+                'file_name': values['file_name'],
                 'file': values['file'],
                 'signature': values['signature']
             }
@@ -169,15 +172,14 @@ def mine():
     file = request.files['file']
 
     if file:
+        file_name = file.filename
         binary_data = file.read()
         base64_data = base64.b64encode(binary_data).decode('utf-8')
-        block = blockchain.mine_block(base64_data)
+        block = blockchain.mine_block(base64_data, file_name)
         if block is not None:
             dict_block = block.__dict__.copy()
             dict_block['transfers'] = [
                 tx.__dict__ for tx in dict_block['transfers']]
-            for tx in dict_block['transfers']:
-                tx['file_name'] = file.filename
             response = {
                 'message': 'Block added successfully.',
                 'block': {
@@ -271,6 +273,43 @@ def get_nodes():
         'all_nodes': nodes
     }
     return jsonify(response), 200
+
+
+@app.route('/download/<file_name>', methods=['GET'])
+def download_file(file_name):
+    try:
+        conn = sqlite3.connect('blockchain-{}.db'.format(port))
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT file FROM open_transfers WHERE file_name = ?', (file_name,))
+        row = cursor.fetchone()
+        if row:
+            file_content = row[0]
+        else:
+            cursor.execute('SELECT block_data FROM blockchain')
+            block_data = cursor.fetchall()
+            for row in block_data:
+                block = json.loads(row[0])
+                for tx in block['transfers']:
+                    if tx['file_name'] == file_name:
+                        file_content = tx['file']
+                        break
+                if 'file_content' in locals():
+                    break
+
+        conn.close()
+
+        if 'file_content' in locals():
+            binary_data = base64.b64decode(file_content)
+            response = make_response(binary_data)
+            response.headers['Content-Type'] = 'application/octet-stream'
+            response.headers['Content-Disposition'] = f'attachment; filename={file_name}'
+            return response
+        else:
+            return jsonify({'message': 'File not found'}), 404
+
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
 
 
 if __name__ == '__main__':

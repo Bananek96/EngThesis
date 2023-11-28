@@ -65,7 +65,7 @@
             </div>
             <div>
                 <a class="navbar-brand text-white" href="/pl">
-                    Polish
+                    Polski
                 </a>
             </div>
         </nav>
@@ -99,7 +99,6 @@
                             <div></div>
                         </div>
                     </div>
-
                 </div>
                 <hr>
                 <div v-if="!user" class="row">
@@ -109,7 +108,7 @@
                 </div>
                 <div v-if="user" class="row">
                     <div class="col">
-                        <form @submit.prevent="onSendTx">
+                        <form @submit.prevent="onSendTx" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label for="recipient">Recipient Key</label>
                                 <input v-model="outgoingTx.recipient" type="text" class="form-control" id="recipient" placeholder="Enter key">
@@ -173,11 +172,13 @@
                                         <div class="card-body">
                                             <p>Previous Hash: {{ data.previous_hash }}</p>
                                             <div class="list-group">
-                                                <div v-for="tx in data.transfers" class="list-group-item flex-column align-items-start">
-                                                    <div>Sender: {{ tx.sender }}</div>
-                                                    <div>Recipient: {{ tx.recipient }}</div>
-                                                    <div>File: {{ tx.file_name }}</div>
+                                            <div v-for="tx in data.transfers" class="list-group-item flex-column align-items-start">
+                                                <div>Sender: {{ tx.sender }}</div>
+                                                <div>Recipient: {{ tx.recipient }}</div>
+                                                <div>File: {{ tx.file_name }}
+                                                    <button type="button" class="btn btn-success" @click="onDownloadFile(tx.file_name)">Download</button>
                                                 </div>
+                                            </div>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +199,9 @@
                                                 <div class="list-group-item flex-column align-items-start">
                                                     <div>Sender: {{ data.sender }}</div>
                                                     <div>Recipient: {{ data.recipient }}</div>
-                                                    <div>File: {{ data.file_name }}</div>
+                                                    <div>File: {{ data.file_name }}
+                                                        <button type="button" class="btn btn-success" @click="onDownloadFile(data.file_name)">Download</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -211,24 +214,6 @@
             </div>
         </div>
     </main>
-
-    <footer class="bg-dark text-center text-white bottom">
-<!--        <section class="">-->
-<!--            <div class="container text-center text-md-start mt-5">-->
-<!--                <div class="row mt-4">-->
-<!--                    <div class="col-md-2 col-lg-1 col-xl-1 mx-auto mb-2">-->
-<!--                        <h6 class="text-uppercase fw-bold mb-4">Links</h6>-->
-<!--                        <p><a href="#" class="text-reset">Linkedin</a></p>-->
-<!--                    </div>-->
-<!--                    <div class="col-md-2 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">-->
-<!--                        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>-->
-<!--                        <p><i class="fas fa-envelope me-3 text-secondary"></i>Email</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </section>-->
-        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">© 2023 Copyright:</div>
-    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -262,8 +247,23 @@
             }
         },
         methods: {
+            onDownloadFile: function (fileName) {
+                var vm = this;
+                axios.get('/download/' + fileName, { responseType: 'blob' })
+                    .then(function (response) {
+                        var blob = new Blob([response.data]);
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = fileName;
+                        link.click();
+                        vm.error = null;
+                    })
+                    .catch(function (error) {
+                        vm.success = null;
+                        vm.error = error.response.data.message;
+                    });
+            },
             onCreateUser: function () {
-                    // Send Http request to create a new wallet (and return keys)
                     var vm = this;
                     this.userLoading = true
                     axios.post('/user')
@@ -274,7 +274,6 @@
                                 public_key: response.data.public_key,
                                 private_key: response.data.private_key
                             }
-                            vm.funds = response.data.funds;
                             vm.userLoading = false
                         })
                         .catch(function (error) {
@@ -295,7 +294,6 @@
                                 public_key: response.data.public_key,
                                 private_key: response.data.private_key
                             }
-                            vm.funds = response.data.funds;
                             vm.userLoading = false;
                         })
                         .catch(function (error) {
@@ -314,12 +312,12 @@
                     formData.append('file', this.outgoingTx.file);
                     axios.post('/mine', formData)
                         .then(function(response) {
-                            vm.error = error.response.data.message;
+                            vm.error = null;
                             vm.success = response.data.message;
                             console.log(response.data);
                         })
                         .catch(function (error) {
-                            vm.success = error.response.data.message;
+                            vm.success = null;
                             vm.error = error.response.data.message;
                         });
                 },

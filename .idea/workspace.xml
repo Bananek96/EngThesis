@@ -7,21 +7,23 @@
     <list default="true" id="93f50c1d-d22c-45e7-9820-82de5229c46f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0986ae85-069e-4e40-8b01-97b63a56b33c.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/0986ae85-069e-4e40-8b01-97b63a56b33c/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/43769f32-f5d4-4aad-966d-c8654aa14954.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/43769f32-f5d4-4aad-966d-c8654aa14954/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3/storage_v2/_src_/schema/main.uQUzAA.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/5725d52d-ae97-4a3f-8f5c-743e5343e2ca.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/5725d52d-ae97-4a3f-8f5c-743e5343e2ca/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/583869f9-de44-42c9-af35-f9fe0c010d30.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/583869f9-de44-42c9-af35-f9fe0c010d30/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/f7776f59-a1d6-432d-b182-d3648f4917a5.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/f7776f59-a1d6-432d-b182-d3648f4917a5/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/blockchain-5000.db" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/blockchain.py" beforeDir="false" afterPath="$PROJECT_DIR$/blockchain.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/transfer.py" beforeDir="false" afterPath="$PROJECT_DIR$/transfer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/index_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index_pl.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/network.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/network.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/network_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/network_pl.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,28 +64,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/github/EngThesis&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "D:/github/BlockChain",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;sqlite&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\github\EngThesis\utility" />
@@ -126,6 +128,11 @@
       <workItem from="1700502437741" duration="1742000" />
       <workItem from="1700560307631" duration="8547000" />
       <workItem from="1700576665922" duration="9144000" />
+      <workItem from="1700671925416" duration="6311000" />
+      <workItem from="1700823012701" duration="831000" />
+      <workItem from="1701086922565" duration="1993000" />
+      <workItem from="1701103535361" duration="9344000" />
+      <workItem from="1701173062116" duration="6135000" />
     </task>
     <servers />
   </component>
