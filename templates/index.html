@@ -75,6 +75,11 @@
         <div id="app">
             <div class="container">
                 <hr>
+                <div v-if="!user" class="row">
+                    <div class="col">
+                        <div class="alert alert-warning">Create or Load a User to start!</div>
+                    </div>
+                </div>
                 <div v-if="error" class="alert alert-danger" role="alert">
                     {{ error }}
                 </div>
@@ -101,11 +106,6 @@
                     </div>
                 </div>
                 <hr>
-                <div v-if="!user" class="row">
-                    <div class="col">
-                        <div class="alert alert-warning">Create or Load a User to start!</div>
-                    </div>
-                </div>
                 <div v-if="user" class="row">
                     <div class="col">
                         <form @submit.prevent="onSendTx" enctype="multipart/form-data">

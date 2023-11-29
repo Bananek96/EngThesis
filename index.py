@@ -2,7 +2,7 @@ import base64
 import json
 import sqlite3
 
-from flask import Flask, jsonify, request, render_template, send_from_directory, make_response
+from flask import Flask, jsonify, request, send_from_directory, make_response
 from flask_cors import CORS
 
 from blockchain import Blockchain
@@ -24,12 +24,12 @@ def index_pl():
 
 @app.route('/network', methods=['GET'])
 def get_network_ui():
-    return render_template('network.html')
+    return send_from_directory('templates', 'network.html')
 
 
 @app.route('/network-pl', methods=['GET'])
 def get_network_ui_pl():
-    return render_template('network_pl.html')
+    return send_from_directory('templates', 'network_pl.html')
 
 
 @app.route('/user', methods=['POST'])
