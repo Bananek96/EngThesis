@@ -5,13 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="93f50c1d-d22c-45e7-9820-82de5229c46f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/1e7bbdab-4068-4dcd-bc86-e1be9f41ecc2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1e7bbdab-4068-4dcd-bc86-e1be9f41ecc2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/25570108-efd6-4dd5-ba21-386d3addbfbe.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/25570108-efd6-4dd5-ba21-386d3addbfbe.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/47adde5a-a2fc-4500-bf37-d8ce765fbff3.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.py" beforeDir="false" afterPath="$PROJECT_DIR$/index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index_pl.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index_pl.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,6 +63,7 @@
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -79,6 +78,13 @@
       <recent name="D:\github\EngThesis\utility" />
       <recent name="D:\github\EngThesis\home" />
     </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-67fca87a943a-c986f194a52a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.11799.259" />
+      </set>
+    </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -121,7 +127,12 @@
       <workItem from="1701086922565" duration="1993000" />
       <workItem from="1701103535361" duration="9344000" />
       <workItem from="1701173062116" duration="6135000" />
-      <workItem from="1701254905796" duration="245000" />
+      <workItem from="1701254905796" duration="428000" />
+      <workItem from="1701262757924" duration="185000" />
+      <workItem from="1701717489959" duration="1489000" />
+      <workItem from="1701813705283" duration="993000" />
+      <workItem from="1701893983809" duration="2668000" />
+      <workItem from="1701947840772" duration="599000" />
     </task>
     <servers />
   </component>
